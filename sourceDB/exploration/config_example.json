@@ -1,0 +1,13 @@
+{
+    "database":{
+        "driver" : "postgresql/mysql/oracle",
+        "database":"postgres/mysql/oracle",
+        "schema":"database schema/owner or all",
+        "connector":"connector (psycopg2, mysqlconnector, cx_oracle)",
+        "host":"host",
+        "user":"user",
+        "passwd":"password",
+        "db":"database_name",
+        "port":"port"
+    }
+}

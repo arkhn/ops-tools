@@ -90,7 +90,7 @@ def ego_graph(G, n, radius=1, center=True, undirected=False, distance=None):
 
 # ## DB connection
 
-# In[9]:
+# In[ ]:
 
 
 try:
@@ -417,6 +417,12 @@ except:
 # In[ ]:
 
 
+df_table_pk
+
+
+# In[ ]:
+
+
 if database == "oracle":
     df_table_pk.columns = [
         "schema_name",
@@ -491,13 +497,15 @@ with tqdm(total=len(list_tables)) as progress:
         try:
             h = k
             j = "".join(v)
-            df = query_wo_header(query4_first10.format(j, k))
+            df = pd.DataFrame()
+            #df = query_wo_header(query4_first10.format(j, k))
             table_name = h + "_rows"
             rows_tables[table_name] = df
             progress.update()
         except:
             print("error ->", j)
             continue
+        
         
 print(progress.format_interval(progress.format_dict["elapsed"]))
 
@@ -821,6 +829,12 @@ elif database == "oracle":
     df_table3["size"] = df_table3["keys"].apply(lambda x: len(x))
 
     df_table3 = df_table3.unstack().unstack().T
+
+
+# In[ ]:
+
+
+df_table3
 
 
 # ## Fig5. Interactive Dashboard
@@ -1173,9 +1187,9 @@ def update_tables(selected_schema):
         ]
 
     else:
-        df = columns_csv[columns_csv["schema_name"].isin(selected_schema)]
+        df = df_table3[df_table3["schema"].isin(selected_schema)]
         return [
-            {"label": name, "value": name} for name in list(df["table_name"].unique())
+            {"label": name, "value": name} for name in list(df["from"].unique())
         ]
 
 
@@ -1241,6 +1255,7 @@ def displayTapNodeData(data):
 
 @app.callback(Output("my-graph", "figure"), Input("dpdn6", "value"))
 def update_nodes(data):
+    
     if data is None:
         return no_update
 
@@ -1264,19 +1279,41 @@ def update_nodes(data):
 # - Show first 10 lines of selected table
 
 
-@app.callback(Output("table", "children"), Input("dpdn6", "value"))
-def table(data):
-    if data is None:
+@app.callback(Output("table", "children"), 
+              [Input("update-button", "n_clicks")],
+              [
+                State("dpdn5", "value"),
+                State("dpdn6", "value")
+              ]
+            )
+
+def table(_,schema_name,table_name):
+    
+    if schema_name is None:
         return no_update
+    if table_name is None:
+        return no_update
+    
     else:
-        table = data[0] + "_rows"
-        dff5 = rows_tables[table]
+        query4_first10 = """select * from {}.{} WHERE ROWNUM <= 10""".format(schema_name[0],table_name[0])
+        df = query_wo_header(query4_first10.format(j, k))
+        
+        
+        
+        #table = data[0] + "_rows"
+        #dff5 = rows_tables[table]
         table = dash_table.DataTable(
-            columns=[{"name": i, "id": i} for i in sorted(dff5.columns)],
-            data=dff5.to_dict("records"),
+            columns=[{"name": i, "id": i} for i in sorted(df.columns)],
+            data=df.to_dict("records"),
         )
         return table
 
 
 app.run_server(port=8081)
+
+
+# In[ ]:
+
+
+
 

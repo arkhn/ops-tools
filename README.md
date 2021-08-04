@@ -1,9 +1,4 @@
-# ops-template
-
-## General advice when creating a repo from this template
-
-1. this repo **MUST NOT** contain any secrets about databases or local environments
-2. this repo should have a (very cool) **code name**, and quote the database, medical center or software **as little as possible**
+# ops-tools
 
 ## Repository structure
 

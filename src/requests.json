@@ -1,0 +1,30 @@
+{
+    "requests": [
+        "ActivityDefinition?topic=C0011211",
+        "ActivityDefinition?topic=C0680153",
+        "ServiceRequest?status=active",
+        "ServiceRequest?status=completed",
+        "Appointment?",
+        "Patient?active=true",
+        "Patient?active=false",
+        "ServiceRequest?occurrence=ge2021-06-24&occurrence=le2021-06-24",
+        "Patient?_has:ServiceRequest:subject:occurrence=le2020-09-12&_has:ServiceRequest:subject:occurrence=ge2020-09-12",
+        "ServiceRequest?code=Coucher",
+        "Appointment?date=le2021-06-15&date=ge2021-06-15",
+        "Organization?type=C0028688",
+        "Organization?type=C4069076&partof.identifier=140016957",
+        "Patient?organization.identifier=140016957",
+        "Encounter?service-provider.identifier=140016957",
+        "Appointment?patient:Patient.organization.identifier=140016957",
+        "ServiceRequest?patient:Patient.organization.identifier=140016957",
+        "Location?organization.partof.identifier=140016957",
+        "Encounter?class=C0019993",
+        "Encounter?class=C1658399",
+        "Encounter?class=C0019843",
+        "Encounter?class=C2090905",
+        "Encounter?class=C0850352",
+        "Goal?",
+        "Observation?code=GIR",
+        "Observation?code=29463-7"
+    ]
+}

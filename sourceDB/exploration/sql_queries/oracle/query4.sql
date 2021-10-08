@@ -1,0 +1,1 @@
+select * from {}.{} WHERE ROWNUM <= 10

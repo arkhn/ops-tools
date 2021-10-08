@@ -11,4 +11,5 @@ on t.table_name = c.table_name
 left join pg_stat_all_tables stt
 on stt.relname = t.table_name 
 left join pg_catalog.pg_stats st
-on st. attname  = c.column_name a
+on st. attname  = c.column_name and st.tablename = t.table_name 
+where t.TABLE_TYPE = 'BASE TABLE'

@@ -1,1 +1,0 @@
-select SCHEMA_NAME from information_schema.SCHEMATA s

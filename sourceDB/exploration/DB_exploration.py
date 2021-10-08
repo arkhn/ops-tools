@@ -1,9 +1,15 @@
 #!/usr/bin/env python
 # coding: utf-8
 
+# In[1]:
+
+
+get_ipython().run_line_magic('load_ext', 'blackcellmagic')
+
+
 # # Data Base Analysis
 
-# In[ ]:
+# In[2]:
 
 
 import sqlalchemy as sa
@@ -25,10 +31,10 @@ import plotly.express as px
 import plotly.graph_objs as go
 
 import dash
-import dash_table
-import dash_core_components as dcc
+from dash import dash_table
+from dash import dcc
 import dash_bootstrap_components as dbc
-import dash_html_components as html
+from dash import html
 import dash_cytoscape as cyto
 from jupyter_dash import JupyterDash
 from dash import no_update
@@ -43,7 +49,7 @@ import os
 
 # ## Functions
 
-# In[ ]:
+# In[3]:
 
 
 def query_w_header(query):
@@ -90,17 +96,17 @@ def ego_graph(G, n, radius=1, center=True, undirected=False, distance=None):
 
 # ## DB connection
 
-# In[ ]:
+# In[4]:
 
 
 try:
-    with open("config.json") as json_data_file:
+    with open("config1.json") as json_data_file:
         data = json.load(json_data_file)
 except FileNotFoundError:
         print('config.json file missing')
 
 
-# In[ ]:
+# In[5]:
 
 
 connector = data["database"]["connector"]
@@ -122,7 +128,7 @@ engine = create_engine(connection)
 # ## Queries SQL
 # #### All queries needed to run these notebook
 
-# In[ ]:
+# In[6]:
 
 
 if database == "postgres":
@@ -202,7 +208,7 @@ if database == "postgres":
 #                on p2.ObjOID = p1.OID where ObjSubID = 0 """
 
 
-# In[ ]:
+# In[7]:
 
 
 if database == "oracle":
@@ -264,7 +270,7 @@ if database == "oracle":
                 """
 
 
-# In[ ]:
+# In[8]:
 
 
 if database == "mysql":
@@ -313,13 +319,13 @@ if database == "mysql":
 
 # ## 1) Discovering DataBase schema
 
-# In[ ]:
+# In[9]:
 
 
 df_schema = list(query_w_header(query1_schemas)[0])
 
 
-# In[ ]:
+# In[10]:
 
 
 #schema_name = input()
@@ -336,7 +342,7 @@ schema_name = data['database']['schema']
 #     1. df_table: containing all table names and columns names (all database)
 #     2. df_table_pk: containing all table names and columns names of only primary and foreig keys.
 
-# In[ ]:
+# In[11]:
 
 
 if schema_name != "all":
@@ -393,7 +399,7 @@ else:
     pass
 
 
-# In[ ]:
+# In[12]:
 
 
 df_table = query_w_header(query2_all_tables)
@@ -402,7 +408,7 @@ df_table.columns = ["schema_name", "table_name", "column_name"]
 
 # #### 2.2) If primary and foreig keys are used, the following query allows the selection of only those columns.
 
-# In[ ]:
+# In[13]:
 
 
 try:
@@ -414,13 +420,13 @@ except:
     df_table_pk = pd.DataFrame()
 
 
-# In[ ]:
+# In[14]:
 
 
 df_table_pk
 
 
-# In[ ]:
+# In[15]:
 
 
 if database == "oracle":
@@ -465,7 +471,7 @@ else:
     df_table_pk.fillna(value=np.nan, inplace=True)
 
 
-# In[ ]:
+# In[16]:
 
 
 df_table_pk.head(3)
@@ -473,13 +479,13 @@ df_table_pk.head(3)
 
 # #### 2.3) Obtaining first 10 rows of each table
 
-# In[ ]:
+# In[17]:
 
 
 list_tables = list(df_table.table_name.unique())
 
 
-# In[ ]:
+# In[18]:
 
 
 dict_schema_table = (
@@ -487,7 +493,7 @@ dict_schema_table = (
 )
 
 
-# In[ ]:
+# In[19]:
 
 
 rows_tables = {}
@@ -514,7 +520,7 @@ print(progress.format_interval(progress.format_dict["elapsed"]))
 
 # #### General stats from all data base, number of tables, number of columns, amount of data.
 
-# In[ ]:
+# In[20]:
 
 
 with tqdm(total=1) as progress:
@@ -531,7 +537,7 @@ with tqdm(total=1) as progress:
 print(progress.format_interval(progress.format_dict["elapsed"]))
 
 
-# In[ ]:
+# In[21]:
 
 
 with tqdm(total=1) as progress:
@@ -546,7 +552,7 @@ with tqdm(total=1) as progress:
 df.fillna(value=np.nan, inplace=True)
 
 
-# In[ ]:
+# In[22]:
 
 
 df.head()
@@ -558,7 +564,7 @@ df.head()
 
 # #### 3.2.1 Column CSV generation:
 
-# In[ ]:
+# In[23]:
 
 
 def columns_data(df, df_table_pk, rows_tables, query6_col_comments):
@@ -607,13 +613,13 @@ def columns_data(df, df_table_pk, rows_tables, query6_col_comments):
     return columns_csv
 
 
-# In[ ]:
+# In[24]:
 
 
 columns_csv = columns_data(df, df_table_pk, rows_tables, query6_col_comments)
 
 
-# In[ ]:
+# In[25]:
 
 
 columns_csv.to_csv("columns_info.csv", index=False)
@@ -621,7 +627,7 @@ columns_csv.to_csv("columns_info.csv", index=False)
 
 # #### 3.2.2 Table CSV generation:
 
-# In[ ]:
+# In[26]:
 
 
 def table_data(columns, df_table_pk):
@@ -744,13 +750,13 @@ def table_data(columns, df_table_pk):
     return table_csv
 
 
-# In[ ]:
+# In[27]:
 
 
 table_csv = table_data(columns_csv, df_table_pk)
 
 
-# In[ ]:
+# In[28]:
 
 
 # Save to CSV
@@ -761,7 +767,7 @@ table_csv.to_csv('tables_info.csv', index = False)
 
 # ### Number of tables and their relations
 
-# In[ ]:
+# In[29]:
 
 
 #Number of schemas/owners
@@ -774,7 +780,7 @@ print("Number of unique columns = ", df_table.column_name.nunique())
 print("Number of columns = ", df_table.column_name.count())
 
 
-# In[ ]:
+# In[30]:
 
 
 stats = pd.DataFrame(np.array([['N° Schemas', df_table.schema_name.nunique()],['N° Tables', df_table.table_name.nunique()],['N° unique columns', df_table.column_name.nunique()],['N° columns', df_table.column_name.count()]]),columns = ['','Count'])
@@ -786,7 +792,7 @@ stats = pd.DataFrame(np.array([['N° Schemas', df_table.schema_name.nunique()],[
 #     Color scaled indicators of column filling in percentage (amount of not-null data / total number of rows).
 #     Uncomment if needed.
 
-# In[ ]:
+# In[31]:
 
 
 #fig_3 = px.treemap(
@@ -802,7 +808,7 @@ stats = pd.DataFrame(np.array([['N° Schemas', df_table.schema_name.nunique()],[
 
 # ## 5) Table conections
 
-# In[ ]:
+# In[32]:
 
 
 if database == "postgres":
@@ -831,7 +837,7 @@ elif database == "oracle":
     df_table3 = df_table3.unstack().unstack().T
 
 
-# In[ ]:
+# In[33]:
 
 
 df_table3
@@ -842,7 +848,7 @@ df_table3
 # The reconstruction of the relationships is done with all the columns or the primary/foreign keys, according to the chose (primary/all).
 # Relationship is reconstructed usign Networkx and interactively ploted in Dash/Plotly.
 
-# In[ ]:
+# In[34]:
 
 
 G = nx.from_pandas_edgelist(df_table3, source="from", target="target", edge_attr=True)
@@ -876,7 +882,7 @@ for i in range(len(nodes)):
 elements_dash = nodes + edges
 
 
-# In[ ]:
+# In[35]:
 
 
 stylesheets = [
@@ -898,13 +904,13 @@ stylesheets = [
 ]
 
 
-# In[ ]:
+# In[36]:
 
 
 styles = {"pre": {"border": "thin lightgrey solid", "overflowX": "scroll"}}
 
 
-# In[ ]:
+# In[39]:
 
 
 app = JupyterDash(__name__, external_stylesheets=[dbc.themes.SPACELAB])
@@ -1082,7 +1088,7 @@ app.layout = html.Div(
                                     dbc.Row(
                                         [
                                             html.H5(
-                                                "Connection description:",
+                                                "Click on a connector in the network to see description:",
                                                 className="text-info",
                                             )
                                         ]
@@ -1111,24 +1117,36 @@ app.layout = html.Div(
                     [
                         dbc.Col(width=1),
                         dbc.Col(
-                            dbc.Container([
-                                dbc.Row([html.H5("Database size:", className="text-info")]),
-                                dbc.Row([
-                            dash_table.DataTable(
-                                id="table2",
-                                columns=[{"name": i, "id": i} for i in stats.columns],
-                                data=stats.to_dict("records"),
+                            dbc.Container(
+                                [
+                                    dbc.Row(
+                                        [
+                                            html.H5(
+                                                "Database size:", className="text-info"
+                                            )
+                                        ]
+                                    ),
+                                    dbc.Row(
+                                        [
+                                            dash_table.DataTable(
+                                                id="table2",
+                                                columns=[
+                                                    {"name": i, "id": i}
+                                                    for i in stats.columns
+                                                ],
+                                                data=stats.to_dict("records"),
+                                            ),
+                                        ]
+                                    ),
+                                ]
                             ),
-                                ])]),
-                            width=2),
-                        
-                            
+                            width=2,
+                        ),
                         dbc.Col(width=1),
                         dbc.Col(
                             dbc.Container([dcc.Graph(id="my-graph")]),
                             width=8,
                         ),
-                        
                     ]
                 )
             ]
@@ -1156,25 +1174,27 @@ app.layout = html.Div(
                     [
                         dbc.Col(width=1),
                         dbc.Col(
-                            dbc.Container(
-                                [
-                                    html.Table(
-                                        id="table",
-                                        className="dbc_light",
-                                    )
-                                ]
+                            html.Table(
+                                id="table",
+                                className="dbc_light",
                             ),
+                            width=8,
                         ),
                         dbc.Col(width=1),
                     ]
                 )
             ]
         ),
+        html.Div([dbc.Row([html.Br([])])]),
     ],
 )
 
 
-# Schema Table selection
+# Schema selection
+
+
+
+# Table selection
 
 
 @app.callback(Output("dpdn6", "options"), [Input("dpdn5", "value")])
@@ -1188,9 +1208,7 @@ def update_tables(selected_schema):
 
     else:
         df = df_table3[df_table3["schema"].isin(selected_schema)]
-        return [
-            {"label": name, "value": name} for name in list(df["from"].unique())
-        ]
+        return [{"label": name, "value": name} for name in list(df["from"].unique())]
 
 
 # -  Network Format using the dropdown menu
@@ -1255,7 +1273,7 @@ def displayTapNodeData(data):
 
 @app.callback(Output("my-graph", "figure"), Input("dpdn6", "value"))
 def update_nodes(data):
-    
+
     if data is None:
         return no_update
 
@@ -1279,37 +1297,43 @@ def update_nodes(data):
 # - Show first 10 lines of selected table
 
 
-@app.callback(Output("table", "children"), 
-              [Input("update-button", "n_clicks")],
-              [
-                State("dpdn5", "value"),
-                State("dpdn6", "value")
-              ]
-            )
+@app.callback(
+    Output("table", "children"),
+    [Input("update-button", "n_clicks")],
+    [State("dpdn5", "value"), State("dpdn6", "value")],
+)
+def table(_, schema_name, table_name):
 
-def table(_,schema_name,table_name):
-    
     if schema_name is None:
         return no_update
     if table_name is None:
         return no_update
-    
+
     else:
-        query4_first10 = """select * from {}.{} WHERE ROWNUM <= 10""".format(schema_name[0],table_name[0])
-        df = query_wo_header(query4_first10.format(j, k))
-        
-        
-        
-        #table = data[0] + "_rows"
-        #dff5 = rows_tables[table]
+        query4=open("query4.sql").read().format(schema_name[0], table_name[0])
+        #query4 = query4_first10.format(schema_name[0], table_name[0])
+        df = query_wo_header(query4.format(j, k))
+
         table = dash_table.DataTable(
             columns=[{"name": i, "id": i} for i in sorted(df.columns)],
             data=df.to_dict("records"),
+            style_data={
+                "whiteSpace": "normal",
+                "height": "auto",
+            },
+            style_table={"overflowX": "auto", "width": "50%"},
+            fill_width=False
         )
         return table
 
 
 app.run_server(port=8081)
+
+
+# In[ ]:
+
+
+
 
 
 # In[ ]:

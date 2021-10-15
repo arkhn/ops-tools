@@ -1,6 +1,11 @@
 #!/usr/bin/python
 # Simple python script to delete list of resources from the API from an url
 
+################################################
+# --> use hapi _expunge instead of this script #
+################################################
+
+
 import requests
 import sys
 import getopt
